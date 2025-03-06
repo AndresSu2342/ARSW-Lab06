@@ -45,7 +45,68 @@
     src/main/resources/static
     ```
 
+Como se indica en el enunciado, procedemos a crear el directorio donde tendremos nuestro html
+
+![Image](https://github.com/user-attachments/assets/d1641587-ef36-429f-9a0f-15dec814f3f1)
+
 4. Cree, en el directorio anterior, la página index.html, sólo con lo básico: título, campo para la captura del autor, botón de 'Get blueprints', campo <div> donde se mostrará el nombre del autor seleccionado, [la tabla HTML](https://www.w3schools.com/html/html_tables.asp) donde se mostrará el listado de planos (con sólo los encabezados), y un campo <div> donde se mostrará el total de puntos de los planos del autor. Recuerde asociarle identificadores a dichos componentes para facilitar su búsqueda mediante selectores.
+
+El formato báscio que decidimos darle a nuestor html es el siguiente:
+
+```html
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #total-puntos {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Blueprints</h1>
+
+<div>
+    <label for="input-autor">Author: </label>
+    <input type="text" id="input-autor">
+    <button id="btn-get-blueprints">Get blueprints</button>
+</div>
+
+<h3 id="autor-seleccionado"></h3>
+
+<table id="tabla-blueprints">
+    <thead>
+    <tr>
+        <th>Blueprint name</th>
+        <th>Number of points</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Aquí se mostrarían los planos en el futuro -->
+    </tbody>
+</table>
+
+<div id="total-puntos">
+    Total user points: <span id="total">0</span>
+</div>
+
+```
 
 5. En el elemento \<head\> de la página, agregue las referencia a las librerías de jQuery, Bootstrap y a la hoja de estilos de Bootstrap. 
     ```html
@@ -60,7 +121,10 @@
           href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
     </head>
     ```
+   
+Ya con el html creado, procedemos a agregar las referencias a las librerías de jQuery, Bootstrap y a la hoja de estilos de Bootstrap.
 
+![Image](https://github.com/user-attachments/assets/639b49e3-c6a8-444f-9ee0-7569891db076)
 
 5. Suba la aplicación (mvn spring-boot:run), y rectifique:
     1. Que la página sea accesible desde:
@@ -68,6 +132,10 @@
     http://localhost:8080/index.html
     ```
     2. Al abrir la consola de desarrollador del navegador, NO deben aparecer mensajes de error 404 (es decir, que las librerías de JavaScript se cargaron correctamente).
+
+Finalmente, a continuación podemos observar lo que se encuentra en nuestra página de forma local:
+
+![Image](https://github.com/user-attachments/assets/04c807f2-5d2a-4841-9b5d-47dfdfda5efc)       
 
 ## Front-End - Lógica
 
