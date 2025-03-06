@@ -152,10 +152,6 @@
    
    ![Image](https://github.com/user-attachments/assets/04c807f2-5d2a-4841-9b5d-47dfdfda5efc)
 
-Finalmente, a continuación podemos observar lo que se encuentra en nuestra página de forma local:
-
-![Image](https://github.com/user-attachments/assets/04c807f2-5d2a-4841-9b5d-47dfdfda5efc)       
-
 ## Front-End - Lógica
 
 1. Ahora, va a crear un Módulo JavaScript que, a manera de controlador, mantenga los estados y ofrezca las operaciones requeridas por la vista. Para esto tenga en cuenta el [patrón Módulo de JavaScript](https://toddmotto.com/mastering-the-module-pattern/), y cree un módulo en la ruta static/js/app.js .
