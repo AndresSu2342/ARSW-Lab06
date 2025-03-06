@@ -57,7 +57,7 @@
     ```
     src/main/resources/static
     ```
-
+    
    Como se indica en el enunciado, procedemos a crear el directorio donde tendremos nuestro html
    
    ![Image](https://github.com/user-attachments/assets/d1641587-ef36-429f-9a0f-15dec814f3f1)
@@ -122,6 +122,7 @@
    ```
 
 3. En el elemento \<head\> de la página, agregue las referencia a las librerías de jQuery, Bootstrap y a la hoja de estilos de Bootstrap.
+     
     ```html
     <head>
         <title>Blueprints</title>
@@ -139,6 +140,7 @@
    
    ![Image](https://github.com/user-attachments/assets/639b49e3-c6a8-444f-9ee0-7569891db076)
 
+
 4. Suba la aplicación (mvn spring-boot:run), y rectifique:
    1. Que la página sea accesible desde:
     ```
@@ -149,6 +151,10 @@
    Finalmente, a continuación podemos observar lo que se encuentra en nuestra página de forma local:
    
    ![Image](https://github.com/user-attachments/assets/04c807f2-5d2a-4841-9b5d-47dfdfda5efc)
+
+Finalmente, a continuación podemos observar lo que se encuentra en nuestra página de forma local:
+
+![Image](https://github.com/user-attachments/assets/04c807f2-5d2a-4841-9b5d-47dfdfda5efc)       
 
 ## Front-End - Lógica
 
