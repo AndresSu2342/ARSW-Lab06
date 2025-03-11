@@ -1,9 +1,14 @@
 ### Escuela Colombiana de Ingeniería
 ### Arquiecturas de Software
+### Autores: Joan Acevedo y Cesar Borray
+
+---
 
 ## Construción de un cliente 'grueso' con un API REST, HTML5, Javascript y CSS3. Parte I.
 
 ### Trabajo individual o en parejas. A quienes tuvieron malos resultados en el parcial anterior se les recomienda hacerlo individualmente.
+
+---
 
 ![](img/mock.png)
 
@@ -11,6 +16,7 @@
 * Al hacer una consulta exitosa, se debe mostrar un mensaje que incluya el nombre del autor, y una tabla con: el nombre de cada plano de autor, el número de puntos del mismo, y un botón para abrirlo. Al final, se debe mostrar el total de puntos de todos los planos (suponga, por ejemplo, que la aplicación tienen un modelo de pago que requiere dicha información).
 * Al seleccionar uno de los planos, se debe mostrar el dibujo del mismo. Por ahora, el dibujo será simplemente una secuencia de segmentos de recta realizada en el mismo orden en el que vengan los puntos.
 
+---
 
 ## Ajustes Backend
 
@@ -49,6 +55,8 @@
    Agregamos las dependencias a nuestro pom
 
    ![Image](https://github.com/user-attachments/assets/317dad7d-ab6c-4ec9-8c0c-6615505ce5bc)
+
+---
 
 ## Front-End - Vistas
 
@@ -152,6 +160,8 @@
    
    ![Image](https://github.com/user-attachments/assets/04c807f2-5d2a-4841-9b5d-47dfdfda5efc)
 
+---
+
 ## Front-End - Lógica
 
 1. Ahora, va a crear un Módulo JavaScript que, a manera de controlador, mantenga los estados y ofrezca las operaciones requeridas por la vista. Para esto tenga en cuenta el [patrón Módulo de JavaScript](https://toddmotto.com/mastering-the-module-pattern/), y cree un módulo en la ruta static/js/app.js .
@@ -239,9 +249,92 @@ return {
 
    * Sobre cualquiera de los dos listados (el original, o el transformado mediante 'map'), aplique un 'reduce' que calcule el número de puntos. Con este valor, use jQuery para actualizar el campo correspondiente dentro del DOM.
 
+Para lograr esto, propusimos el la siguiente `function`:
+
+```java
+function updateBlueprintsInfo(blueprints) {
+     console.log("Datos recibidos de apimock:", blueprints); // Para depuración
+
+     if (!Array.isArray(blueprints) || blueprints.length === 0) {
+         console.log("No hay planos para este autor.");
+         $("#tabla-blueprints tbody").empty();
+         $("#total").text("0");
+         $("#autor-seleccionado").text("No blueprints found.");
+         return;
+     }
+     
+     $("#tabla-blueprints tbody").empty();
+     
+     blueprints.forEach(bp => {
+         let row = `<tr>
+             <td>${bp.name}</td>
+             <td>${bp.points.length}</td>
+         </tr>`;
+         $("#tabla-blueprints tbody").append(row);
+     });
+     
+     let totalPoints = blueprints.reduce((sum, bp) => sum + bp.points.length, 0);
+     $("#total").text(totalPoints);
+     
+     $("#autor-seleccionado").text(`Blueprints by: ${selectedAuthor}`);
+ }
+```
+
+Y el siguiente `return`:
+
+```java
+return {
+     getBlueprintsByAuthor: function (authname) {
+         selectedAuthor = authname;
+         console.log(`Solicitando planos para el autor: ${authname}`);
+
+         apimock.getBlueprintsByAuthor(authname, function (blueprints) {
+             if (!blueprints) {
+                 console.log("El API Mock devolvió un valor nulo o indefinido.");
+                 updateBlueprintsInfo([]);
+             } else {
+                 updateBlueprintsInfo(blueprints);
+             }
+         });
+     }
+ };
+```
+
 6. Asocie la operación antes creada (la de app.js) al evento 'on-click' del botón de consulta de la página.
 
+Para esto, decidimos dejar esta funcion en `app.js` ya que consideramos que es mejor practica hacerlo de esta manera, para ello agregamos el siguiente código al final de `app.js`
+
+```java
+$(document).ready(function () {
+    $("#btn-get-blueprints").click(function () {
+        let autor = $("#input-autor").val().trim();
+        if (autor !== "") {
+            app.getBlueprintsByAuthor(autor);
+        } else {
+            console.log("Ingrese un autor válido.");
+        }
+    });
+});
+```
+
 7. Verifique el funcionamiento de la aplicación. Inicie el servidor, abra la aplicación HTML5/JavaScript, y rectifique que al ingresar un usuario existente, se cargue el listado del mismo.
+
+Al probar el funcionamiento de manera local, vemos que los resultados son los esperados:
+
+![Image](https://github.com/user-attachments/assets/bee9066c-45ec-41c6-80c2-9f9978d65a7d)
+
+---
+
+**Nota**
+
+Al momento de ejecutar el código, observamos que habia un error con los scrips propuestos para cargar el `JQuery` y el `Bootstrap` asi que decidimos cambiarlos por los siguientes:
+
+```java
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+```
+
+---
 
 ## Para la próxima semana
 
