@@ -156,7 +156,29 @@
 
 1. Ahora, va a crear un Módulo JavaScript que, a manera de controlador, mantenga los estados y ofrezca las operaciones requeridas por la vista. Para esto tenga en cuenta el [patrón Módulo de JavaScript](https://toddmotto.com/mastering-the-module-pattern/), y cree un módulo en la ruta static/js/app.js .
 
+Procedemos a crear el archivo `app.js` en el directorio `src/main/resources/static/js/app.js`:
+
+![Image](https://github.com/user-attachments/assets/e15c23a1-a175-48db-b2e2-222bf6b58738)
+
 2. Copie el módulo provisto (apimock.js) en la misma ruta del módulo antes creado. En éste agréguele más planos (con más puntos) a los autores 'quemados' en el código.
+
+Ya con el JS creado, agregamos una copia del código brindado por el JS `apimock.js`, donde agregamos más planos a los autores "quemados" en código:
+
+```java
+    mockdata["johnconnor"] = [
+        { author: "johnconnor", points: [{ x: 150, y: 120 }, { x: 215, y: 115 }], name: "house" },
+        { author: "johnconnor", points: [{ x: 340, y: 240 }, { x: 15, y: 215 }], name: "gear" },
+        { author: "maryweyland", points: [{ x: 145, y: 145 }, { x: 111, y: 111 }], name: "fabric" },
+        { author: "maryweyland", points: [{ x: 141, y: 141 }, { x: 69, y: 69 }], name: "building" }
+        ];
+
+    mockdata["maryweyland"] = [
+        { author: "maryweyland", points: [{ x: 140, y: 140 }, { x: 115, y: 115 }], name: "house2" },
+        { author: "maryweyland", points: [{ x: 140, y: 140 }, { x: 115, y: 115 }], name: "gear2" },
+        { author: "maryweyland", points: [{ x: 160, y: 160 }, { x: 80, y: 80 }], name: "fabric2" },
+        { author: "maryweyland", points: [{ x: 100, y: 100 }, { x: 185, y: 185 }], name: "building2" }
+        ];
+```
 
 3. Agregue la importación de los dos nuevos módulos a la página HTML (después de las importaciones de las librerías de jQuery y Bootstrap):
     ```html
@@ -164,14 +186,52 @@
     <script src="js/app.js"></script>
     ```
 
-3. Haga que el módulo antes creado mantenga de forma privada:
+Procedemos a importar los nuevos dos módulos a la página HTML `index.html` en el orden que nos indica el enunciado:
+
+![Image](https://github.com/user-attachments/assets/c54f7d8a-670c-4899-bba7-0729afd72a93)
+
+4. Haga que el módulo antes creado mantenga de forma privada:
    * El nombre del autor seleccionado.
+
+Para ello agregamos la siguiente linea de código:
+
+```java
+var selectedAuthor = null;
+```
+
    * El listado de nombre y tamaño de los planos del autor seleccionado. Es decir, una lista objetos, donde cada objeto tendrá dos propiedades: nombre de plano, y número de puntos del plano.
 
-   Junto con una operación pública que permita cambiar el nombre del autor actualmente seleccionado.
+Para lograr esto, creamos la variable `blueprintsInfo` y agregamos la función privada `updateBlueprintsInfo`:
+
+```java
+    var blueprintsInfo = [];
+
+    function updateBlueprintsInfo() {
+        if (selectedAuthor && mockdata[selectedAuthor]) {
+            blueprintsInfo = mockdata[selectedAuthor].map(bp => ({
+                name: bp.name,
+                pointsCount: bp.points.length
+            }));
+        } else {
+            blueprintsInfo = [];
+        }
+    }
+```
+
+   * Junto con una operación pública que permita cambiar el nombre del autor actualmente seleccionado.
+
+Para lograr una función publica que haga esto, la debemos agregar en el `return`, ya que solo las funciones y variables expuestas en este espacio pueden ser accedidas desde fuera del módulo:
+
+```java
+return {
+        getBlueprintsByAuthor: function (authname) {
+            selectedAuthor = authname;
+        }
+    };
+```
 
 
-4. Agregue al módulo 'app.js' una operación pública que permita actualizar el listado de los planos, a partir del nombre de su autor (dado como parámetro). Para hacer esto, dicha operación debe invocar la operación 'getBlueprintsByAuthor' del módulo 'apimock' provisto, enviándole como _callback_ una función que:
+5. Agregue al módulo 'app.js' una operación pública que permita actualizar el listado de los planos, a partir del nombre de su autor (dado como parámetro). Para hacer esto, dicha operación debe invocar la operación 'getBlueprintsByAuthor' del módulo 'apimock' provisto, enviándole como _callback_ una función que:
 
    * Tome el listado de los planos, y le aplique una función 'map' que convierta sus elementos a objetos con sólo el nombre y el número de puntos.
 
@@ -179,9 +239,9 @@
 
    * Sobre cualquiera de los dos listados (el original, o el transformado mediante 'map'), aplique un 'reduce' que calcule el número de puntos. Con este valor, use jQuery para actualizar el campo correspondiente dentro del DOM.
 
-5. Asocie la operación antes creada (la de app.js) al evento 'on-click' del botón de consulta de la página.
+6. Asocie la operación antes creada (la de app.js) al evento 'on-click' del botón de consulta de la página.
 
-6. Verifique el funcionamiento de la aplicación. Inicie el servidor, abra la aplicación HTML5/JavaScript, y rectifique que al ingresar un usuario existente, se cargue el listado del mismo.
+7. Verifique el funcionamiento de la aplicación. Inicie el servidor, abra la aplicación HTML5/JavaScript, y rectifique que al ingresar un usuario existente, se cargue el listado del mismo.
 
 ## Para la próxima semana
 
