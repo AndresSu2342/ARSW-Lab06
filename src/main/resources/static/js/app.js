@@ -1,73 +1,94 @@
-//@author Joan A. y Cesar B.
-
-apimock = (function () {
-    var mockdata = [];
-
-    mockdata["johnconnor"] = [
-        { author: "johnconnor", points: [{ x: 150, y: 120 }, { x: 215, y: 115 }], name: "house" },
-        { author: "johnconnor", points: [{ x: 340, y: 240 }, { x: 15, y: 215 }], name: "gear" },
-        { author: "maryweyland", points: [{ x: 145, y: 145 }, { x: 111, y: 111 }], name: "fabric" },
-        { author: "maryweyland", points: [{ x: 141, y: 141 }, { x: 69, y: 69 }], name: "building" }
-    ];
-
-    mockdata["maryweyland"] = [
-        { author: "maryweyland", points: [{ x: 140, y: 140 }, { x: 115, y: 115 }], name: "house2" },
-        { author: "maryweyland", points: [{ x: 140, y: 140 }, { x: 115, y: 115 }], name: "gear2" },
-        { author: "maryweyland", points: [{ x: 160, y: 160 }, { x: 80, y: 80 }], name: "fabric2" },
-        { author: "maryweyland", points: [{ x: 100, y: 100 }, { x: 185, y: 185 }], name: "building2" }
-    ];
-
+var app = (function () {
     var selectedAuthor = null;
-    var blueprintsInfo = [];
+    var api = apimock; // Cambia entre 'apimock' y 'apiclient' aquí
 
-    function updateBlueprintsInfo() {
-        if (selectedAuthor && mockdata[selectedAuthor]) {
-            blueprintsInfo = mockdata[selectedAuthor].map(bp => ({
-                name: bp.name,
-                pointsCount: bp.points.length
-            }));
-        } else {
-            blueprintsInfo = [];
+    function updateBlueprintsInfo(blueprints) {
+        console.log("Datos recibidos de la API:", blueprints);
+
+        if (!Array.isArray(blueprints) || blueprints.length === 0) {
+            console.log("No hay planos para este autor.");
+            $("#tabla-blueprints tbody").empty();
+            $("#total").text("0");
+            $("#autor-seleccionado").text("No blueprints found.");
+            return;
         }
+
+        $("#tabla-blueprints tbody").empty();
+
+        blueprints.forEach(bp => {
+            let row = `<tr>
+                <td>${bp.name}</td>
+                <td>${bp.points.length}</td>
+                <td><button class="btn-draw" data-bpname="${bp.name}">Draw</button></td>
+            </tr>`;
+            $("#tabla-blueprints tbody").append(row);
+        });
+
+        let totalPoints = blueprints.reduce((sum, bp) => sum + bp.points.length, 0);
+        $("#total").text(totalPoints);
+        $("#autor-seleccionado").text(`${selectedAuthor}´s blueprints:`);
+
+        $(".btn-draw").click(function () {
+            let bpname = $(this).data("bpname");
+            app.drawBlueprint(selectedAuthor, bpname);
+        });
+    }
+
+    function drawBlueprint(author, bpname) {
+        console.log(`Dibujando blueprint: ${bpname} de ${author}`);
+
+        api.getBlueprintsByNameAndAuthor(author, bpname, function (blueprint) {
+            if (!blueprint || !blueprint.points) {
+                console.log("No se encontraron puntos en el blueprint.");
+                return;
+            }
+
+            $("#blueprint-title").text(`Current blueprint: ${bpname}`);
+
+            let canvas = document.getElementById("myCanvas");
+            let ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.beginPath();
+            let points = blueprint.points;
+            ctx.moveTo(points[0].x, points[0].y);
+
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.stroke();
+        });
     }
 
     return {
-        getBlueprintsByAuthor: function (authname, callback) {
+        getBlueprintsByAuthor: function (authname) {
             selectedAuthor = authname;
-            updateBlueprintsInfo();
-            callback(mockdata[authname]);
-        },
+            console.log(`Solicitando planos para el autor: ${authname}`);
 
-        getBlueprintsByNameAndAuthor: function (authname, bpname, callback) {
-            callback(mockdata[authname]?.find(e => e.name === bpname));
+            api.getBlueprintsByAuthor(authname, function (blueprints) {
+                if (!blueprints) {
+                    console.log("El API devolvió un valor nulo o indefinido.");
+                    updateBlueprintsInfo([]);
+                } else {
+                    updateBlueprintsInfo(blueprints);
+                }
+            });
         },
-
-        setSelectedAuthor: function (newAuthor) {
-            selectedAuthor = newAuthor;
-            updateBlueprintsInfo();
-        },
-
-        getSelectedAuthor: function () {
-            return selectedAuthor;
-        },
-
-        getBlueprintsInfo: function () {
-            return blueprintsInfo;
+        drawBlueprint: drawBlueprint,
+        setApi: function (newApi) {
+            api = newApi; // Permite cambiar dinámicamente la fuente de datos
         }
     };
 })();
 
-/*
-Example of use:
-var fun = function (list) {
-    console.info(list);
-};
-
-apimock.getBlueprintsByAuthor("johnconnor", fun);
-console.log(apimock.getSelectedAuthor());  // "johnconnor"
-console.log(apimock.getBlueprintsInfo());  // Lista de planos con su cantidad de puntos
-
-apimock.setSelectedAuthor("maryweyland");
-console.log(apimock.getSelectedAuthor());  // "maryweyland"
-console.log(apimock.getBlueprintsInfo());  // Nueva lista de planos
-*/
+// ✅ Evento `click` correctamente definido
+$(document).ready(function () {
+    $("#btn-get-blueprints").click(function () {
+        let autor = $("#input-autor").val().trim();
+        if (autor !== "") {
+            app.getBlueprintsByAuthor(autor);
+        } else {
+            console.log("Ingrese un autor válido.");
+        }
+    });
+});
